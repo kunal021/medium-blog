@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(
-      { message: "Account created sucessfully", success: true, data: user },
+      { message: "Account created sucessfully", success: true },
       { status: 200 }
     );
   } catch (error: any) {
