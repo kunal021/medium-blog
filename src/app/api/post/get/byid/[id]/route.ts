@@ -9,9 +9,18 @@ export async function GET(
 ) {
   try {
     const id = params.id;
+
+    if (!id) {
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+    }
+
     const post = await prisma.posts.findMany({
       where: { id: Number(id), published: true },
     });
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
 
     return NextResponse.json(
       { message: "Data Found", success: true, data: post },

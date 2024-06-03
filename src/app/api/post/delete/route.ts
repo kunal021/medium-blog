@@ -4,15 +4,21 @@ import { auth } from "@/auth";
 
 const prisma = new PrismaClient();
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { delete: string } }
-) {
+export async function DELETE(req: NextRequest) {
   try {
     const session = await auth();
     const userId = session?.user.id;
 
-    const id = params.delete;
+    if (!userId) {
+      return NextResponse.json({ error: "No User Found" }, { status: 404 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+    }
 
     const comment = await prisma.comments.deleteMany({
       where: { postsId: Number(id) },

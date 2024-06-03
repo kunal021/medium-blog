@@ -4,17 +4,19 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { like: string } }
-) {
+export async function PATCH(req: NextRequest) {
   try {
     const session = await auth();
     const userId = session?.user.id;
     if (!userId) {
       return NextResponse.json({ error: "No User Found" }, { status: 404 });
     }
-    const id = params.like;
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+    }
     const { action } = await req.json();
 
     const post = await prisma.posts.findUnique({

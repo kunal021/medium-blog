@@ -1,17 +1,24 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { getJwtTokenData } from "@/utils/getJwtTokenData";
+import { auth } from "@/auth";
 
 const prisma = new PrismaClient();
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { publish: string } }
-) {
+export async function PATCH(req: NextRequest) {
   try {
-    const userId = await getJwtTokenData(req);
+    const session = await auth();
+    const userId = session?.user.id;
 
-    const id = params.publish;
+    if (!userId) {
+      return NextResponse.json({ error: "No User Found" }, { status: 404 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+    }
 
     const post = await prisma.posts.update({
       where: {
