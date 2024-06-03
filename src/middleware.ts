@@ -1,33 +1,36 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-// export { auth as middleware } from "@/auth";
+import { auth } from "@/auth";
 
-export function middleware(request: NextRequest) {
-  const path = request.nextUrl.pathname;
+import {
+  publicRoutes,
+  authenticationRoutes,
+  apiAuthPrefix,
+  DEFAULT_LOGIN_REDIRECT,
+} from "./routes";
 
-  const isPublicPath =
-    path === "/" ||
-    path === "/signin" ||
-    path === "/signup" ||
-    path === "/authprovider";
+export default auth((req) => {
+  const { nextUrl } = req;
+  const isLoggedIn = !!req.auth;
 
-  const isAuthPath = path === "/signin" || path === "/signup";
+  const isApiAuthRoute = nextUrl.pathname.includes(apiAuthPrefix);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isAuthRoute = authenticationRoutes.includes(nextUrl.pathname);
 
-  const token = request.cookies.get("token")?.value || "";
-  const authJsToken = request.cookies.get("authjs.session-token")?.value || "";
-
-  const isLoggedIn = token || authJsToken;
-
-  if (isAuthPath && isLoggedIn) {
-    return NextResponse.redirect(new URL("/", request.nextUrl));
+  if (isApiAuthRoute) {
+    return;
   }
 
-  if (!isPublicPath && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/signin", request.nextUrl));
+  if (isAuthRoute) {
+    if (isLoggedIn) {
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    }
+    return;
   }
-}
 
-// See "Matching Paths" below to learn more
+  if (!isLoggedIn && !isPublicRoute) {
+    return Response.redirect(new URL("/signin", nextUrl));
+  }
+});
+
 export const config = {
-  matcher: ["/", "/signin", "/signup", "/profile"],
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

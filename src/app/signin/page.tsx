@@ -2,16 +2,13 @@
 import { signIn } from "next-auth/react";
 import FormField from "@/components/FormField";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 export default function SignIn() {
-  const router = useRouter();
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,17 +28,23 @@ export default function SignIn() {
 
   const handleSignIn = async (e: any) => {
     e.preventDefault();
-    try {
-      setLoading(true);
-      const response = await axios.post("/api/user/login", formData);
-      if (response.data.success === true) {
-        toast.success(response.data.message);
+    setLoading(true);
+    const response = await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+      redirectTo: DEFAULT_LOGIN_REDIRECT,
+    });
+    setLoading(false);
+    if (response?.error) {
+      switch (response.error) {
+        case "CredentialsSignin":
+          toast.error("Invalid Credentilas");
+          break;
+        default:
+          toast.error("Something Went Wrong");
       }
-      router.push("/");
-    } catch (error: any) {
-      toast.error(error.response.data.error);
-    } finally {
-      setLoading(false);
+    } else {
+      toast.success("Logged In Successfully");
     }
   };
 
@@ -90,11 +93,13 @@ export default function SignIn() {
           required
         />
         {passwordError && (
-          <p className="text-red-500 text-sm">{passwordError}</p>
+          <p className="text-red-500 text-sm text-center w-60 sm:w-96">
+            {passwordError}
+          </p>
         )}
         <Button
           type="submit"
-          disabled={buttonDisabled}
+          disabled={buttonDisabled || loading}
           className="w-full disabled:cursor-not-allowed"
         >
           {loading ? <Loader2 className="animate-spin" /> : "Sign In"}
@@ -108,10 +113,10 @@ export default function SignIn() {
       </div>
       <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-5 w-60 sm:w-96">
         <Button onClick={() => signIn("github")} className="w-full">
-          {loading ? <Loader2 className="animate-spin" /> : "GitHub"}
+          GitHub
         </Button>
         <Button onClick={() => signIn("google")} className="w-full">
-          {loading ? <Loader2 className="animate-spin" /> : "Google"}
+          Google
         </Button>
       </div>
       <p className="text-sm">

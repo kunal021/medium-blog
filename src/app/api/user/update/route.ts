@@ -1,14 +1,12 @@
-import { getJwtTokenData } from "@/utils/getJwtTokenData";
+import { auth } from "@/auth";
 import { PrismaClient } from "@prisma/client";
-import { error } from "console";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const prisma = new PrismaClient();
 
 const userSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
+  name: z.string(),
 });
 
 export async function POST(req: NextRequest) {
@@ -23,11 +21,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userId = await getJwtTokenData(req);
+    const session = await auth();
+    const userId = session?.user.id;
 
-    const user = await prisma.users.update({
+    const user = await prisma.user.update({
       where: { id: userId },
-      data: { firstName: data.firstName, lastName: data.lastName },
+      data: { name: data.name },
     });
 
     return NextResponse.json(

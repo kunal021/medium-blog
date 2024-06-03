@@ -14,9 +14,8 @@ export default function SignUp() {
 
   const [formData, setFormData] = useState({
     email: "",
-    firstName: "",
-    lastName: "",
-    password: "",
+    name: "",
+    hashedPassword: "",
   });
 
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -27,13 +26,20 @@ export default function SignUp() {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await axios.post("/api/user/create", formData);
-      if (response.data.data.success === true) {
-        toast.success(response.data.data.message);
+      const response = await axios.post("/api/user/create", {
+        email: formData.email,
+        name: formData.name,
+        hashedPassword: formData.hashedPassword,
+      });
+
+      if (response.data.success === true) {
+        toast.success(response.data.message);
       }
-      router.push("/");
+      router.push("/signin");
     } catch (error: any) {
-      toast.error(error.response.data.error);
+      toast.error(
+        error.response.data.error || "Sign-up failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -42,9 +48,8 @@ export default function SignUp() {
   useEffect(() => {
     if (
       formData.email.length > 0 &&
-      formData.password.length > 7 &&
-      formData.firstName.length > 0 &&
-      formData.lastName.length > 0
+      formData.hashedPassword.length > 7 &&
+      formData.name.length > 0
     ) {
       setButtonDisabled(false);
     } else {
@@ -54,7 +59,7 @@ export default function SignUp() {
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
-    setFormData({ ...formData, password: newPassword });
+    setFormData({ ...formData, hashedPassword: newPassword });
 
     if (newPassword.length < 8) {
       setPasswordError("Password must be at least 8 characters long");
@@ -88,44 +93,32 @@ export default function SignUp() {
           required={true}
         ></FormField>
         <FormField
-          label="Firstname"
-          name="firstName"
-          placeholder="Enter your firstname"
-          value={formData.firstName}
-          onChange={(e) =>
-            setFormData({ ...formData, firstName: e.target.value })
-          }
+          label="Name"
+          name="name"
+          placeholder="Enter your name"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           type="text"
-          key="firstName"
-          required={true}
-        ></FormField>
-        <FormField
-          label="Lastname"
-          name="lastName"
-          placeholder="Enter your lastname"
-          value={formData.lastName}
-          onChange={(e) =>
-            setFormData({ ...formData, lastName: e.target.value })
-          }
-          type="text"
-          key="lastName"
+          key="name"
           required={true}
         ></FormField>
         <FormField
           label="Password"
           name="password"
           placeholder="Enter a password"
-          value={formData.password}
+          value={formData.hashedPassword}
           onChange={handlePasswordChange}
           type="password"
           required
         />
         {passwordError && (
-          <p className="text-red-500 text-sm">{passwordError}</p>
+          <p className="text-red-500 text-sm text-center w-60 sm:w-96">
+            {passwordError}
+          </p>
         )}
         <Button
           type="submit"
-          disabled={buttonDisabled}
+          disabled={buttonDisabled || loading}
           className="w-full disabled:cursor-not-allowed"
         >
           {loading ? <Loader2 className="animate-spin" /> : "Sign Up"}
@@ -139,10 +132,10 @@ export default function SignUp() {
       </div>
       <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-5 w-60 sm:w-96">
         <Button onClick={() => signIn("github")} className="w-full">
-          {loading ? <Loader2 className="animate-spin" /> : "GitHub"}
+          GitHub
         </Button>
         <Button onClick={() => signIn("google")} className="w-full">
-          {loading ? <Loader2 className="animate-spin" /> : "Google"}
+          Google
         </Button>
       </div>
       <p className="text-sm">

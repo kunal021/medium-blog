@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { getJwtTokenData } from "@/utils/getJwtTokenData";
+import { auth } from "@/auth";
 
 const prisma = new PrismaClient();
 
@@ -9,7 +9,8 @@ export async function DELETE(
   { params }: { params: { delete: string } }
 ) {
   try {
-    const userId = await getJwtTokenData(req);
+    const session = await auth();
+    const userId = session?.user.id;
 
     const id = params.delete;
 

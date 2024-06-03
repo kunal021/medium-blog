@@ -1,4 +1,4 @@
-import { getJwtTokenData } from "@/utils/getJwtTokenData";
+import { auth } from "@/auth";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,7 +9,11 @@ export async function PATCH(
   { params }: { params: { like: string } }
 ) {
   try {
-    const userId = getJwtTokenData(req);
+    const session = await auth();
+    const userId = session?.user.id;
+    if (!userId) {
+      return NextResponse.json({ error: "No Comment Found" }, { status: 404 });
+    }
     const id = params.like;
     const { action } = await req.json();
 

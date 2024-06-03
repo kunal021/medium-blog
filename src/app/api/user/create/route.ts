@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
+import { getUserByEmail } from "@/utils/userData";
 
 const prisma = new PrismaClient();
 
@@ -9,11 +10,10 @@ const userSchema = z.object({
   email: z
     .string({ required_error: "Email is required" })
     .email("Invalid Email"),
-  firstName: z.string({ required_error: "Firstname is required" }),
-  lastName: z.string({ required_error: "Lastname is required" }),
-  password: z
+  name: z.string({ required_error: "Name is required" }),
+  hashedPassword: z
     .string({ required_error: "Password is required" })
-    .min(8, "Password must be more than 8 characters")
+    .min(8, "Password must be atleast 8 characters")
     .max(32, "Password must be less than 32 characters"),
 });
 
@@ -28,9 +28,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const existingUser = await prisma.users.findUnique({
-      where: { email: data.email },
-    });
+    const existingUser = await getUserByEmail(data.email);
 
     if (existingUser) {
       return NextResponse.json(
@@ -39,13 +37,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-    const user = await prisma.users.create({
+    const password = await bcrypt.hash(data.hashedPassword, 10);
+    const users = await prisma.user.create({
       data: {
         email: data.email,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        password: hashedPassword,
+        name: data.name,
+        hashedPassword: password,
       },
     });
 
