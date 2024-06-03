@@ -40,7 +40,7 @@ export async function POST(
         { status: 200 }
       );
     } else {
-      return null;
+      return;
     }
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
