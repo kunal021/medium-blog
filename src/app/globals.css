@@ -117,11 +117,6 @@
   }
 }
 
-@font-face {
-  font-family: "LMG ArunA";
-  src: url("../../public/LMG\ -\ ARUN\ A.TTF");
-}
-
 .tiptap {
   >*+* {
     margin-top: 0.75em;
