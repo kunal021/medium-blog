@@ -1,4 +1,4 @@
-export function truncateData(data: string, wordLimit: number): string {
+export function truncateData(data: string, wordLimit: number) {
   const words = data.split(" ");
   if (words.length <= wordLimit) {
     return data;
@@ -30,4 +30,15 @@ export function getDate(timestamp: string) {
   const day = date.getUTCDate();
 
   return `${day} ${month}, ${year}`;
+}
+
+export function read(content: string) {
+  const wordPerMinute = 200;
+  const words = content.split(/\s+/).length;
+
+  const readingTime = words / wordPerMinute;
+
+  const minute = Math.floor(readingTime);
+
+  return minute;
 }

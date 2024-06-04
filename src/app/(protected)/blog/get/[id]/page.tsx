@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { getDate, truncateData } from "@/utils/date";
+import { getDate, read } from "@/utils/date";
 import parse from "html-react-parser";
 import Loader from "@/components/Loader";
+import SideBar from "@/components/SideBar";
 
 function Blog({ params }: { params: any }) {
   const [postData, setPostData] = useState<Post[]>([]);
@@ -27,14 +28,25 @@ function Blog({ params }: { params: any }) {
               const userResponse = await axios.get(
                 `/api/user/userdata?userId=${post.authorId}`
               );
+              console;
               const user: User = userResponse.data.data;
-              return { ...post, user }; // Merge user data with the post
+
+              try {
+                const commentsResponse = await axios.get(
+                  `/api/comment/get/bypostid?${post.id}`
+                );
+                const comments: Comment[] = commentsResponse.data.data;
+                return { ...post, user, comments };
+              } catch (error) {
+                console.error(`Error fetching Comment`);
+                return { ...post, user };
+              }
             } catch (error) {
               console.error(
                 `Error fetching user data for authorId ${post.authorId}`,
                 error
               );
-              return post; // Return the post as is if user fetch fails
+              return post;
             }
           })
         );
@@ -61,7 +73,14 @@ function Blog({ params }: { params: any }) {
   const firstPost = postData[0];
 
   return (
-    <div>
+    <div className="flex">
+      <div className=" w-[10%] z-10">
+        <SideBar
+          postId={firstPost.id}
+          numOfComments={firstPost.comment ? firstPost.comment.length : 0}
+          likes={firstPost.likes}
+        />
+      </div>
       <div className="flex flex-col justify-start items-center h-full my-10 w-full">
         <div className="my-5 space-y-6 w-[70%]">
           {firstPost.user && (
@@ -72,6 +91,8 @@ function Blog({ params }: { params: any }) {
               <p>{firstPost.user.name}</p>
               <span>·</span>
               <p>{getDate(firstPost.publishedAt)}</p>
+              <span>·</span>
+              <p>{read(firstPost.content)} min read</p>
             </div>
           )}
           <div className="text-3xl font-bold">{parse(firstPost.title)}</div>

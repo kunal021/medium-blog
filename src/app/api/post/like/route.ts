@@ -17,21 +17,21 @@ export async function PATCH(req: NextRequest) {
     if (!id) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
-    const { action } = await req.json();
+    // const { action } = await req.json();
 
     const post = await prisma.posts.findUnique({
       where: { id: Number(id) },
     });
 
     if (!post) {
-      return NextResponse.json({ error: "Comment not found" }, { status: 404 });
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
     let updateLikes;
 
     let likedBy = post.likedBy;
 
-    if (action === "like" && !likedBy.includes(userId)) {
+    if (!likedBy.includes(userId)) {
       likedBy.push(userId);
       updateLikes = await prisma.posts.update({
         where: {
@@ -42,7 +42,7 @@ export async function PATCH(req: NextRequest) {
           likedBy: likedBy,
         },
       });
-    } else if (action === "unlike" && likedBy.includes(userId)) {
+    } else if (likedBy.includes(userId)) {
       likedBy = likedBy.filter((id) => id !== userId);
       updateLikes = await prisma.posts.update({
         where: {
@@ -62,7 +62,6 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json(
       {
-        message: action === "like" ? "Liked" : "Unliked",
         success: true,
         data: updateLikes,
       },

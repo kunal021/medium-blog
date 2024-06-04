@@ -565,7 +565,7 @@ const Tiptap: React.FC<props> = ({ placeholder, getHtmlData }) => {
         )}
       </div>
       <div className="w-full h-full border border-gray-300 rounded-md">
-        <EditorContent editor={editor} />
+        <EditorContent editor={editor} className="overflow-y-auto" />
       </div>
     </div>
   );

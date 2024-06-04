@@ -4,7 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import parse from "html-react-parser";
 import Image from "next/image";
-import { getDate, truncateData } from "@/utils/date";
+import { getDate, truncateData, read } from "@/utils/date";
 import Loader from "@/components/Loader";
 import Link from "next/link";
 
@@ -74,6 +74,8 @@ function AllPost() {
               <p>{data.user?.name}</p>
               <span>·</span>
               <p>{getDate(data.publishedAt)}</p>
+              <span>·</span>
+              <p>{read(data.content)} min read</p>
             </div>
             <div className="text-xl font-bold">
               {parse(truncateData(data.title, 20))}
