@@ -6,11 +6,16 @@ import { getDate, read } from "@/utils/date";
 import parse from "html-react-parser";
 import Loader from "@/components/Loader";
 import SideBar from "@/components/SideBar";
+import Comments from "@/components/Comments";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { ArrowLeftIcon } from "lucide-react";
+import ImageAndDate from "@/components/ImageAndDate";
 
 function Blog({ params }: { params: any }) {
   const [postData, setPostData] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
-  // console.log(params.id);
+  const router = useRouter();
 
   useEffect(() => {
     const getPublishedPost = async () => {
@@ -28,14 +33,13 @@ function Blog({ params }: { params: any }) {
               const userResponse = await axios.get(
                 `/api/user/userdata?userId=${post.authorId}`
               );
-              console;
               const user: User = userResponse.data.data;
 
               try {
                 const commentsResponse = await axios.get(
-                  `/api/comment/get/bypostid?${post.id}`
+                  `/api/post/comment/get/bypostid?id=${post.id}`
                 );
-                const comments: Comment[] = commentsResponse.data.data;
+                const comments: Comment = commentsResponse.data.data;
                 return { ...post, user, comments };
               } catch (error) {
                 console.error(`Error fetching Comment`);
@@ -63,7 +67,9 @@ function Blog({ params }: { params: any }) {
   }, [params.id]);
 
   if (!loading && postData.length === 0) {
-    return <div>No Blog Found</div>;
+    <div className="min-h-screen w-full text-xl md:text-3xl font-bold flex justify-center items-center">
+      No Data Found
+    </div>;
   }
 
   if (loading || postData.length === 0) {
@@ -74,30 +80,35 @@ function Blog({ params }: { params: any }) {
 
   return (
     <div className="flex">
-      <div className=" w-[10%] z-10">
-        <SideBar
-          postId={firstPost.id}
-          numOfComments={firstPost.comment ? firstPost.comment.length : 0}
-          likes={firstPost.likes}
-        />
-      </div>
       <div className="flex flex-col justify-start items-center h-full my-10 w-full">
         <div className="my-5 space-y-6 w-[70%]">
+          <Button onClick={() => router.back()}>
+            <ArrowLeftIcon />
+          </Button>
           {firstPost.user && (
-            <div className="flex justify-start items-center space-x-1 font-medium text-sm">
-              <div className="flex justify-center items-center bg-gray-400 border-[1px] h-6 w-6 rounded-full border-transparent">
-                {firstPost.user.name[0]}
-              </div>
-              <p>{firstPost.user.name}</p>
-              <span>·</span>
-              <p>{getDate(firstPost.publishedAt)}</p>
-              <span>·</span>
-              <p>{read(firstPost.content)} min read</p>
-            </div>
+            <ImageAndDate
+              content={read(firstPost.content)}
+              image={firstPost.user.name[0]}
+              name={firstPost.user.name}
+              publishedAt={getDate(firstPost.publishedAt)}
+            />
           )}
+          <div className="z-10">
+            {/* <SideBar
+              postId={firstPost.id}
+              numOfComments={firstPost.comments ? firstPost.comments.length : 0}
+              likes={firstPost.likes}
+            /> */}
+          </div>
           <div className="text-3xl font-bold">{parse(firstPost.title)}</div>
           <div className="pb-5">{parse(firstPost.content)}</div>
         </div>
+        {/* <Comments
+          comment={
+            firstPost.comments ? firstPost.comments : " No Comment Found"
+          }
+          postId={firstPost.id}
+        /> */}
       </div>
     </div>
   );

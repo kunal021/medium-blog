@@ -176,8 +176,8 @@ const Tiptap: React.FC<props> = ({ placeholder, getHtmlData }) => {
   getHtmlData(editor.getHTML());
 
   return (
-    <div className="flex flex-col justify-center items-center h-full w-full p-4 space-y-4">
-      <div className="flex space-x-2 justify-start items-center w-full">
+    <div className="flex flex-col justify-center items-center h-full w-full p-4 space-y-5">
+      <div className="flex space-x-2 justify-start items-center h-10 w-full">
         <div
           onClick={() => setShowToolBar((prev) => !prev)}
           className="flex justify-center items-center z-30 border-2 rounded-full py-1 md:py-0 md:p-1 border-black cursor-pointer"
@@ -189,7 +189,7 @@ const Tiptap: React.FC<props> = ({ placeholder, getHtmlData }) => {
           )}
         </div>
         {showToolBar && (
-          <div className="flex flex-col flex-wrap md:flex-row justify-center lg:justify-between items-center z-30 lg:border-2 lg:border-black space-x-4 md:space-y-0 lg:rounded-lg px-2 py-[2px]">
+          <div className="flex flex-col flex-wrap md:flex-row justify-center lg:justify-between items-start z-30 lg:border-2 lg:border-black space-y-1 md:space-x-4 md:space-y-0 lg:rounded-lg px-2 py-[2px]">
             <div className="flex justify-between items-center space-x-1">
               <button
                 onClick={() => editor.chain().focus().toggleBold().run()}

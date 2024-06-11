@@ -3,12 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
-    const id = params.id;
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
     const postComment = await prisma.comments.findMany({
       where: { postsId: Number(id) },
     });

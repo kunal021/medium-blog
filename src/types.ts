@@ -7,7 +7,7 @@ interface Post {
   publishedAt: string;
   authorId: string;
   user?: User;
-  comment?: Comment;
+  comments?: Comment;
 }
 
 interface User {
@@ -24,6 +24,11 @@ interface Comment {
   likedBy?: string[];
 }
 
+interface userComments {
+  comment: {};
+  postId: number;
+}
+
 interface Sidebar {
   postId: number;
   numOfComments: number;
@@ -38,4 +43,11 @@ interface FormFieldProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   type: string;
   required: boolean;
+}
+
+interface ImageAndDate {
+  image?: string;
+  name?: string;
+  publishedAt: string;
+  content: number;
 }

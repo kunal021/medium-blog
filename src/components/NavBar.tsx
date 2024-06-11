@@ -5,27 +5,25 @@ import { SquarePen } from "lucide-react";
 
 async function HomeNavBar() {
   const session = await auth();
-  const userId = session?.user.id;
+  const user = session?.user;
 
   return (
     <div className="flex px-4 md:px-10 py-3 justify-between items-center border-b bg-white border-b-black sticky top-0 z-50">
       <div>
         <h1 className="text-base md:text-2xl font-black">MEDIUM-BLOG</h1>
       </div>
-      {userId ? (
-        <div className="flex justify-between items-center space-x-4 md:space-x-10">
+      {user?.id ? (
+        <div className="flex justify-between items-center space-x-4 md:space-x-6">
           <Link href={"/post/create"} className="flex space-x-2">
             <SquarePen className="h-6 w-6" />
-            <p className="text-base font-medium">Write</p>
+            <p className="hidden md:block text-base font-medium">Write</p>
           </Link>
-          <form
-            action={async () => {
-              "use server";
-              await signOut();
-            }}
+          <Link
+            href={"/settings"}
+            className="flex justify-center items-center bg-gray-400 border-[1px] h-8 w-8 rounded-full border-transparent font-bold"
           >
-            <Button type="submit">Sign Out</Button>
-          </form>
+            {user.name?.charAt(0)}
+          </Link>
         </div>
       ) : (
         <div>

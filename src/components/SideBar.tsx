@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 
 const SideBar: React.FC<Sidebar> = ({ postId, numOfComments, likes }) => {
   const [postLike, setpostLikes] = useState(likes);
-  const [users, setUsers] = useState("");
+  const [users, setUsers] = useState<string[]>([]);
 
   const session = useSession();
   const userId = session.data?.user.id || "";
@@ -20,22 +20,24 @@ const SideBar: React.FC<Sidebar> = ({ postId, numOfComments, likes }) => {
     }
   };
 
+  console.log(users);
+
   return (
-    <div className="h-full w-full left-0 sticky bg-black">
-      <div className="h-full w-full flex flex-col justify-between items-center py-40">
+    <div className="h-full w-full">
+      <div className="h-full w-full flex justify-start items-center space-x-20">
         <div
           onClick={handleLike}
-          className="flex flex-col justify-center items-center text-white cursor-pointer"
+          className="flex flex-col justify-center items-center cursor-pointer"
         >
           {users.includes(userId) ? (
-            <Heart color="#f472b6" fill={"#f472b6"} />
+            <Heart color="#f472b6" fill={"#f472b6"} className="h-6 w-6" />
           ) : (
-            <Heart color="#ffffff" />
+            <Heart className="h-6 w-6" />
           )}
           {postLike}
         </div>
-        <div className="flex flex-col justify-center items-center text-white cursor-pointer">
-          <MessageSquare color="#ffffff" />
+        <div className="flex flex-col justify-center items-center cursor-pointer">
+          <MessageSquare className="h-6 w-6" />
           {numOfComments}
         </div>
       </div>

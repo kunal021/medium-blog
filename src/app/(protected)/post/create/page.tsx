@@ -3,12 +3,15 @@ import Tiptap from "@/components/TextEditor";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
-import { any } from "zod";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { ArrowLeftIcon } from "lucide-react";
 
 function Editor() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+
+  const router = useRouter();
   const handleTitleData = (html: any) => {
     setTitle(html);
   };
@@ -40,11 +43,14 @@ function Editor() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center space-y-4 my-10">
-      <div className=" h-[100px] w-[80%] my-10">
+    <div className="flex flex-col justify-center items-center space-y-10 my-10">
+      <Button onClick={() => router.back()}>
+        <ArrowLeftIcon />
+      </Button>
+      <div className=" h-[100px] w-[95%] md:w-[80%] my-10">
         <Tiptap placeholder="Title Here..." getHtmlData={handleTitleData} />
       </div>
-      <div className=" h-[450px] w-[80%] my-10">
+      <div className=" h-[450px] w-[95%] md:w-[80%] my-10">
         <Tiptap placeholder="Content Here..." getHtmlData={handleContentData} />
       </div>
       <div className="flex justify-between items-center w-[75%]">

@@ -9,11 +9,9 @@ const userSchema = z.object({
   title: z.string({ required_error: "Title is required" }),
 });
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { comment: string } }
-) {
+export async function POST(req: NextRequest) {
   try {
+    // console.log(params);
     const session = await auth();
     const userId = session?.user.id;
 
@@ -25,8 +23,8 @@ export async function POST(
         return NextResponse.json({ error: "Title reqired" }, { status: 400 });
       }
 
-      const id = params.comment;
-
+      const { searchParams } = new URL(req.url);
+      const id = searchParams.get("id");
       const comment = await prisma.comments.create({
         data: { title: data.title, Posts: { connect: { id: Number(id) } } },
       });
