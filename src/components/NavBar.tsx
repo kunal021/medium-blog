@@ -10,7 +10,9 @@ async function HomeNavBar() {
   return (
     <div className="flex px-4 md:px-10 py-3 justify-between items-center border-b bg-white border-b-black sticky top-0 z-50">
       <div>
-        <h1 className="text-base md:text-2xl font-black">MEDIUM-BLOG</h1>
+        <Link href={"/"} className="text-base md:text-2xl font-black">
+          MEDIUM-BLOG
+        </Link>
       </div>
       {user?.id ? (
         <div className="flex justify-between items-center space-x-4 md:space-x-6">
@@ -18,12 +20,25 @@ async function HomeNavBar() {
             <SquarePen className="h-6 w-6" />
             <p className="hidden md:block text-base font-medium">Write</p>
           </Link>
-          <Link
-            href={"/settings"}
-            className="flex justify-center items-center bg-gray-400 border-[1px] h-8 w-8 rounded-full border-transparent font-bold"
-          >
-            {user.name?.charAt(0)}
-          </Link>
+          <div className="relative group z-20">
+            <Link
+              href={"/settings"}
+              className="flex justify-center items-center bg-gray-400 border-[1px] h-8 w-8 rounded-full border-transparent font-bold"
+            >
+              {user.name?.charAt(0)}
+            </Link>
+            <form
+              action={async () => {
+                "use server";
+                await signOut();
+              }}
+              className="hidden group-hover:block absolute top-8 -left-6"
+            >
+              <Button type="submit" className="group-hover:block">
+                Sign Out
+              </Button>
+            </form>
+          </div>
         </div>
       ) : (
         <div>
