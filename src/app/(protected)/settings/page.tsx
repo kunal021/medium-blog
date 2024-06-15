@@ -3,7 +3,7 @@ import UserSignOut from "@/components/settings/UserSignOut";
 
 function page() {
   return (
-    <div className="flex flex-col-reverse justify-center items-center md:flex-row md:justify-between md:items-start m-5">
+    <div className="flex flex-col-reverse justify-center items-center md:flex-row md:justify-between md:items-start m-2 md:m-5">
       <div className="md:w-[70%]">
         <UserPosts />
       </div>
