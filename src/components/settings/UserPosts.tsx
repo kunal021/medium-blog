@@ -97,7 +97,7 @@ function UserPosts() {
   console.log(userPosts);
   return (
     <div className="h-full w-full">
-      <div className="flex flex-col justify-start items-center h-full my-10 w-full md:w-[60%]">
+      <div className="flex flex-col justify-start items-center h-full my-10 w-full md:w-[80%]">
         {userPosts.map((data) => (
           <div key={data.id} className="my-5 space-y-2 w-[80%]">
             <Link href={`/blog/${data.id}`}>
