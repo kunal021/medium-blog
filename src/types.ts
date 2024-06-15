@@ -5,6 +5,7 @@ interface Post {
   likes: number;
   likedBy: string[];
   publishedAt: string;
+  published?: boolean;
   authorId: string;
   user?: User;
   comments?: Comment;

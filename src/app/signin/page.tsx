@@ -122,12 +122,6 @@ export default function SignIn() {
       <p className="text-sm">
         <sup className="text-red-500">*</sup> Indicates required fields
       </p>
-      <p className="font-semibold">
-        Continue without signin?{" "}
-        <Link href={"/"} className="underline text-blue-500">
-          Explore
-        </Link>
-      </p>
     </div>
   );
 }

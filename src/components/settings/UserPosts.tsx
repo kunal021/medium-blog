@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import ImageAndDate from "../ImageAndDate";
@@ -9,7 +9,6 @@ import { getDate, read, truncateData } from "@/utils/date";
 import parse from "html-react-parser";
 import Loader from "../Loader";
 import toast from "react-hot-toast";
-import { Loader2 } from "lucide-react";
 
 const fetchPost = async (
   userId: string,
@@ -17,13 +16,13 @@ const fetchPost = async (
   setUserPosts: any
 ) => {
   try {
-    setLoading({ common: true, del: false });
+    setLoading((prevLoading: any) => ({ ...prevLoading, common: true }));
     const response = await axios.get(`api/post/get/byuserid?userid=${userId}`);
     setUserPosts(response.data.data);
   } catch (error) {
     console.log(error);
   } finally {
-    setLoading({ common: false, del: false });
+    setLoading((prevLoading: any) => ({ ...prevLoading, common: false }));
   }
 };
 
@@ -31,11 +30,12 @@ function UserPosts() {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState({
     common: false,
-    del: false,
+    del: {} as { [key: number]: boolean },
+    pub: {} as { [key: number]: boolean },
   });
 
   const session = useSession();
-  const userId = useMemo(() => session?.data?.user.id, [session]);
+  const userId = session?.data?.user.id;
   useEffect(() => {
     if (!userId) return;
     fetchPost(userId, setLoading, setUserPosts);
@@ -43,7 +43,10 @@ function UserPosts() {
 
   const handleDelete = async (id: number) => {
     try {
-      setLoading({ del: true, common: false });
+      setLoading((prevLoading) => ({
+        ...prevLoading,
+        del: { ...prevLoading.del, [id]: true },
+      }));
       const response = await axios.delete(`/api/post/delete?id=${id}`);
       if (response.status === 200) {
         toast.success("Post Deleted Successfully");
@@ -52,21 +55,33 @@ function UserPosts() {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading({ del: false, common: false });
+      setLoading((prevLoading) => ({
+        ...prevLoading,
+        del: { ...prevLoading.del, [id]: false },
+      }));
     }
   };
 
-  // const handleUpdate = async (id: number) => {
-  //   try {
-  //     const response = await axios.delete(`/api/post/delete?id=${id}`);
-  //     if (response.status === 200) {
-  //       toast.success("Post Deleted Successfully");
-  //     }
-  //     fetchPost(userId!, setLoading, setUserPosts);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const handlePublish = async (id: number) => {
+    try {
+      setLoading((prevLoading) => ({
+        ...prevLoading,
+        pub: { ...prevLoading.pub, [id]: true },
+      }));
+      const response = await axios.patch(`/api/post/publish?id=${id}`);
+      if (response.status === 200) {
+        toast.success("Post Published Successfully");
+      }
+      fetchPost(userId!, setLoading, setUserPosts);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading((prevLoading) => ({
+        ...prevLoading,
+        pub: { ...prevLoading.pub, [id]: false },
+      }));
+    }
+  };
 
   if (userPosts.length === 0 && !loading.common) {
     return (
@@ -76,20 +91,10 @@ function UserPosts() {
     );
   }
 
-  if (loading.del) {
-    return (
-      <div className="flex flex-col space-x-2 justify-center items-center m-10">
-        <Loader2 className="animate-spin font-black h-8 w-8" />
-        <p>Deleting...</p>
-      </div>
-    );
+  if (loading.common || userPosts.length === 0) {
+    return <Loader />;
   }
-
-  console.log(loading.del);
-
-  // if (loading || UserPosts.length === 0) {
-  //   return <Loader />;
-  // }
+  console.log(userPosts);
   return (
     <div className="h-full w-full">
       <div className="flex flex-col justify-start items-center h-full my-10 w-full md:w-[60%]">
@@ -98,8 +103,8 @@ function UserPosts() {
             <Link href={`/blog/${data.id}`}>
               <ImageAndDate
                 content={read(data.content)}
-                image={data.user?.name[0]}
-                name={data.user?.name}
+                image={session.data?.user.name?.charAt(0)!}
+                name={session.data?.user.name!}
                 publishedAt={getDate(data.publishedAt)}
               />
               <div className="text-lg md:text-xl font-bold">
@@ -109,13 +114,22 @@ function UserPosts() {
                 {parse(truncateData(data.content, 50))}
               </div>
             </Link>
-            <div>
+            <div className="flex justify-between items-center">
               <button
                 onClick={() => handleDelete(data.id)}
-                className="underline text-gray-500"
+                className="underline text-red-500"
               >
-                Delete
+                {loading.del[data.id] ? "Deleting..." : "Delete"}
               </button>
+
+              {!data.published && (
+                <button
+                  onClick={() => handlePublish(data.id)}
+                  className="underline text-green-500"
+                >
+                  {loading.pub[data.id] ? "Publishing..." : "Publish"}
+                </button>
+              )}
             </div>
             <hr className="w-full h-[1px] bg-gray-400"></hr>
           </div>
