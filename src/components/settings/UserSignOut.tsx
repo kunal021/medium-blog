@@ -14,7 +14,7 @@ function UserSignOut() {
   };
   return (
     <div className="h-full w-full">
-      <div className="w-[80%] space-y-5">
+      <div className="w-[80%] space-y-5 flex flex-col">
         <Button onClick={() => signOut()}>Sign Out</Button>
         <Button onClick={handleDelete} className="bg-red-700 hover:bg-red-500">
           Delete Account
