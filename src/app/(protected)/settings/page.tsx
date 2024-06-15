@@ -3,11 +3,11 @@ import UserSignOut from "@/components/settings/UserSignOut";
 
 function page() {
   return (
-    <div className="flex flex-col-reverse justify-center items-center md:flex-row md:justify-between md:items-start md:m-5">
-      <div className="md:w-[70%]">
+    <div className="flex flex-col-reverse justify-center w-full items-center md:flex-row md:justify-between md:items-start md:m-5">
+      <div className="w-full md:w-[70%]">
         <UserPosts />
       </div>
-      <div className="md:w-[25%] border-2 rounded-md border-black p-5 m-2">
+      <div className="w-full md:w-[25%] border-2 rounded-md border-black p-5 m-2">
         <UserSignOut />
       </div>
     </div>
