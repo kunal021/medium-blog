@@ -1,6 +1,5 @@
-import { auth, signOut } from "@/auth";
+import { auth } from "@/auth";
 import Link from "next/link";
-import { Button } from "./ui/button";
 import { SquarePen } from "lucide-react";
 
 async function HomeNavBar() {
@@ -27,17 +26,6 @@ async function HomeNavBar() {
             >
               {user.name?.charAt(0)}
             </Link>
-            <form
-              action={async () => {
-                "use server";
-                await signOut();
-              }}
-              className="hidden group-hover:block absolute top-8 -left-6"
-            >
-              <Button type="submit" className="group-hover:block">
-                Sign Out
-              </Button>
-            </form>
           </div>
         </div>
       ) : (

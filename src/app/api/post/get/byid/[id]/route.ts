@@ -15,7 +15,7 @@ export async function GET(
     }
 
     const post = await prisma.posts.findMany({
-      where: { id: Number(id), published: true },
+      where: { id: Number(id) },
     });
 
     if (!post) {

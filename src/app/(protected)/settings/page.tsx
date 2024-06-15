@@ -1,12 +1,17 @@
-import { auth } from "@/auth";
-import { json } from "stream/consumers";
+import UserPosts from "@/components/settings/UserPosts";
+import UserSignOut from "@/components/settings/UserSignOut";
 
-export default async function SettingPages() {
-  const session = await auth();
+function page() {
   return (
-    <div>
-      <div>settings</div>
-      <p>{JSON.stringify(session)}</p>
+    <div className="flex justify-between items-start">
+      <div className="w-[60%]">
+        <UserPosts />
+      </div>
+      <div className="w-[30%] border-2 rounded-md border-black p-5 m-2">
+        <UserSignOut />
+      </div>
     </div>
   );
 }
+
+export default page;

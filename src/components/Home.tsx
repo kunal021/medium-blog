@@ -77,7 +77,7 @@ export function LoggedIn() {
     getPublishedPost();
   }, []);
 
-  if (postData.length == 0 && loading == false) {
+  if (postData.length === 0 && !loading) {
     return (
       <div className="min-h-screen w-full text-xl md:text-3xl font-bold flex justify-center items-center">
         No Blog Found
