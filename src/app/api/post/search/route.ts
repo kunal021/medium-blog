@@ -9,19 +9,20 @@ export async function GET(req: NextRequest) {
 
     console.log(postTitle);
 
-    if (!postTitle) {
-      return NextResponse.json(
-        { error: "No post found with this title" },
-        { status: 400 }
-      );
+    let posts;
+
+    if (postTitle) {
+      posts = await prisma.posts.findMany({
+        where: { title: { contains: postTitle }, published: true },
+      });
+    } else {
+      posts = await prisma.posts.findMany({
+        where: { published: true },
+      });
     }
 
-    const allPosts = await prisma.posts.findMany({
-      where: { title: { contains: postTitle }, published: true },
-    });
-
     return NextResponse.json(
-      { message: "Data Found", success: true, data: allPosts },
+      { message: "Data Found", success: true, data: posts },
       { status: 200 }
     );
   } catch (error: any) {

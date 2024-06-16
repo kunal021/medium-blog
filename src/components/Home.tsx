@@ -9,6 +9,7 @@ import { getDate, truncateData, read } from "@/utils/date";
 import Loader from "@/components/Loader";
 import Link from "next/link";
 import ImageAndDate from "./ImageAndDate";
+import { Input } from "./ui/input";
 
 export function LoggedOut() {
   return (
@@ -38,13 +39,14 @@ export function LoggedOut() {
 
 export function LoggedIn() {
   const [postData, setPostData] = useState<Post[]>([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getPublishedPost = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("/api/post/get/getallpublished");
+        const response = await axios.get(`/api/post/search?title=${search}`);
         const posts: Post[] = response.data.data;
 
         // Fetch user data for each authorId
@@ -75,45 +77,49 @@ export function LoggedIn() {
     };
 
     getPublishedPost();
-  }, []);
-
-  if (postData.length === 0 && !loading) {
-    return (
-      <div className="min-h-screen w-full text-xl md:text-3xl font-bold flex justify-center items-center">
-        No Blog Found
-      </div>
-    );
-  }
-
-  if (loading || postData.length === 0) {
-    return <Loader />;
-  }
+  }, [search]);
 
   return (
-    <div className=" w-full">
-      <div className="flex flex-col justify-start items-center h-full my-10 w-full md:w-[60%]">
-        <p className="text-3xl font-black w-[80%] mb-2">All Blogs</p>
-        {postData.map((data) => (
-          <Link
-            key={data.id}
-            href={`/blog/${data.id}`}
-            className="my-5 space-y-2 w-[80%]"
-          >
-            <ImageAndDate
-              content={read(data.content)}
-              image={data.user?.name[0]}
-              name={data.user?.name}
-              publishedAt={getDate(data.publishedAt)}
-            />
-            <div className="text-lg md:text-xl font-bold">
-              {parse(truncateData(data.title, 20))}
-            </div>
-            <div className="pb-5 text-sm md:text-base">
-              {parse(truncateData(data.content, 50))}
-            </div>
-            <hr className="w-full h-[1px] bg-gray-400"></hr>
-          </Link>
-        ))}
+    <div className="w-full">
+      <div className="flex flex-col justify-start items-center h-full my-5 w-full md:w-[60%]">
+        <div className="w-[80%] mb-6">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search..."
+          />
+        </div>
+        {loading && <Loader />}
+        {!loading && postData.length === 0 && (
+          <div className="min-h-screen w-full text-xl md:text-3xl font-bold flex justify-center items-center">
+            No Blog Found
+          </div>
+        )}
+        {!loading && postData.length > 0 && (
+          <>
+            {postData.map((data) => (
+              <Link
+                key={data.id}
+                href={`/blog/${data.id}`}
+                className="my-5 space-y-2 w-[80%]"
+              >
+                <ImageAndDate
+                  content={read(data.content)}
+                  image={data.user?.name[0]}
+                  name={data.user?.name}
+                  publishedAt={getDate(data.publishedAt)}
+                />
+                <div className="text-lg md:text-xl font-bold">
+                  {parse(truncateData(data.title, 20))}
+                </div>
+                <div className="pb-5 text-sm md:text-base">
+                  {parse(truncateData(data.content, 50))}
+                </div>
+                <hr className="w-full h-[1px] bg-gray-400"></hr>
+              </Link>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
