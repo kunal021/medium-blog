@@ -7,9 +7,6 @@ function page() {
       <div className="w-full md:w-[70%]">
         <UserPosts />
       </div>
-      <div className="w-[70%] md:w-[25%] border-2 rounded-md border-black p-5 mx-10">
-        <UserSignOut />
-      </div>
     </div>
   );
 }

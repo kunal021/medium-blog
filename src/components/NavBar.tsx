@@ -1,10 +1,15 @@
-import { auth } from "@/auth";
+"use client";
+
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { SquarePen } from "lucide-react";
+import { ReactNode, useState } from "react";
+import UserSignOut from "./settings/UserSignOut";
 
-async function HomeNavBar() {
-  const session = await auth();
-  const user = session?.user;
+function HomeNavBar() {
+  const session = useSession();
+  const user = session?.data?.user;
+  const [userIconOpen, setUserIconOpen] = useState(false);
 
   return (
     <div className="flex px-4 md:px-10 py-3 justify-between items-center border-b bg-white border-b-black sticky top-0 z-50">
@@ -20,12 +25,19 @@ async function HomeNavBar() {
             <p className="hidden md:block text-base font-medium">Write</p>
           </Link>
           <div className="relative group z-20">
-            <Link
-              href={"/settings"}
-              className="flex justify-center items-center bg-gray-400 border-[1px] h-8 w-8 rounded-full border-transparent font-bold"
+            <div
+              onClick={() => setUserIconOpen((prev) => !prev)}
+              className="flex justify-center items-center bg-gray-400 border-[1px] h-8 w-8 rounded-full border-transparent font-bold cursor-pointer"
             >
               {user.name?.charAt(0)}
-            </Link>
+            </div>
+            <div
+              className={`${
+                !userIconOpen ? "hidden" : "block"
+              } absolute top-11 -left-32 md:-left-[105px] w-44 border bg-white rounded-b-md p-2 border-gray-500 z-50`}
+            >
+              {<UserSignOut />}
+            </div>
           </div>
         </div>
       ) : (
