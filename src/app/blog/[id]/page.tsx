@@ -81,7 +81,7 @@ function Blog({ params }: { params: any }) {
   return (
     <div className="flex">
       <div className="flex flex-col justify-start items-center h-full my-10 w-full">
-        <div className="my-5 space-y-6 w-[70%]">
+        <div className="my-5 space-y-6 w-[90%]">
           <Button onClick={() => router.back()}>
             <ArrowLeftIcon />
           </Button>
