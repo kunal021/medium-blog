@@ -7,6 +7,13 @@ export async function GET(req: NextRequest) {
   try {
     const allPosts = await prisma.posts.findMany();
 
+    if (!allPosts) {
+      return NextResponse.json(
+        { message: "NO Data Founs", success: false },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
       { message: "Data Found", success: true, data: allPosts },
       { status: 200 }

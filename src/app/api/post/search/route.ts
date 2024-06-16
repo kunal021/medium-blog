@@ -21,6 +21,13 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    if (!posts) {
+      return NextResponse.json(
+        { message: "NO Data Founs", success: false },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
       { message: "Data Found", success: true, data: posts },
       { status: 200 }

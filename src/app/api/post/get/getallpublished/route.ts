@@ -9,6 +9,12 @@ export async function GET(req: NextRequest) {
       where: { published: true },
     });
 
+    if (!allPosts) {
+      return NextResponse.json(
+        { message: "NO Data Founs", success: false },
+        { status: 404 }
+      );
+    }
     return NextResponse.json(
       { message: "Data Found", success: true, data: allPosts },
       { status: 200 }
