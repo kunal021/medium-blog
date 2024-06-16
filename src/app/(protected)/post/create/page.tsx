@@ -10,6 +10,8 @@ import { ArrowLeftIcon } from "lucide-react";
 function Editor() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [publishingLoading, setPublishingLoading] = useState(false);
+  const [draftLoading, setDraftLoading] = useState(false);
 
   const router = useRouter();
   const handleTitleData = (html: any) => {
@@ -22,6 +24,11 @@ function Editor() {
 
   const handlePost = async (published: boolean) => {
     try {
+      if (published) {
+        setPublishingLoading(true);
+      } else {
+        setDraftLoading(true);
+      }
       const response = await axios.post("/api/post/create", {
         title: title,
         content: content,
@@ -39,6 +46,9 @@ function Editor() {
       setContent("");
     } catch (error) {
       console.log(error);
+    } finally {
+      setPublishingLoading(false);
+      setDraftLoading(false);
     }
   };
 
@@ -58,13 +68,13 @@ function Editor() {
           onClick={() => handlePost(true)}
           className="bg-green-500 hover:bg-green-700 text-sm md:text-lg rounded-full"
         >
-          Publish
+          {publishingLoading ? "Publishing..." : "Publish"}
         </Button>
         <Button
           onClick={() => handlePost(false)}
           className="bg-red-500 hover:bg-red-700 text-sm md:text-lg rounded-full"
         >
-          Save as draft
+          {draftLoading ? "Saving as Draft..." : "Save as Draft"}
         </Button>
       </div>
     </div>
